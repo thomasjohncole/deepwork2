@@ -4,7 +4,7 @@
 
         {% for item in list %}
 
-            <li>{{ item.work_date }} -
+            <li>{{ item.work_date }} - {{item.day}} - {{item.hours_worked}} - {{item.remarks}}
             <a href="#">Edit</a> -
             <a href="#">Delete</a></li>
         {% endfor %}
