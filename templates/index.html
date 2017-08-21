@@ -4,12 +4,15 @@
 
         {% for item in list %}
 
-            <li>{{ item.work_date }} - {{item.day}} - {{item.hours_worked}} - {{item.remarks}}
+            <li>{{ item.work_date }} - {{item.day}} - {{item.hours_worked}} hours - {{item.remarks}}
             <a href="#">Edit</a> -
             <a href="#">Delete</a></li>
+
         {% endfor %}
 
         </ul>
+        <p> Running total hours worked = {{total_hours}} </p>
+
     </div>
 </body>
 </html>

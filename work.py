@@ -20,8 +20,9 @@ session = DBSession()
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
+    total_hours = session.query(func.sum(Dailyhours.hours_worked))
     list = session.query(Dailyhours).order_by(Dailyhours.work_date)
-    return render_template('index.html', list = list)
+    return render_template('index.html', list = list, total_hours = total_hours)
 
 @app.route('/add/', methods=['GET', 'POST'])
 def addDay():
