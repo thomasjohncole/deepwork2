@@ -8,7 +8,7 @@
 
             <li>{{ item.work_date }} - {{item.hours_worked}} hours - {{item.remarks}}
             <a href="#">Edit</a> -
-            <a href="#">Delete</a></li>
+            <a href="{{url_for('deleteDay', work_date = item.work_date)}}">Delete</a></li>
 
         {% endfor %}
 
