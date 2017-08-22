@@ -41,6 +41,19 @@ def addDay():
     else:
         return render_template('add_day.html')
 
+# @app.route('/delete/', methods=['GET', 'POST'])
+#def deleteDay(work_date):
+#    """ Page to delete a day row entry from the database """
+#    day_to_delete = session.query(Dailyhours).filter_by(work_date = work_date).one()
+#    if request.method == 'POST':
+#        session.delete(day_to_delete)
+#        # flash('%s Successfully Deleted' % restaurantToDelete.name)
+#        session.commit()
+#        return redirect(url_for('indexPage', restaurant_id = restaurant_id))
+#    else:
+#        return render_template('deleteRestaurant.html',restaurant = restaurantToDelete)
+
+
 
 if __name__ == '__main__':
     app.debug = True
