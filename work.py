@@ -29,8 +29,9 @@ def addDay():
     """ Form to add a new work day entry, and logic to POST it to db """
     if request.method == 'POST':
         new_date = Dailyhours(
-            work_date = datetime.strptime(request.form['date'], "%Y-%m-%d"),
-            day = (request.form['day']),
+            # work_date = datetime.strptime(request.form['date'], ""),
+            work_date = datetime.strptime(
+                request.form['date'], "%Y-%m-%d"), # .strftime('%A'),
             hours_worked = (request.form['hours_worked']),
             remarks = (request.form['remarks'])
             )
