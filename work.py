@@ -42,7 +42,7 @@ app.url_map.converters['date'] = DateConverter
 def indexPage():
     """ Shows the list of workdays"""
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    list = session.query(Dailyhours).order_by(Dailyhours.work_date)
+    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
 
     return render_template('index.html', list = list, total_hours = total_hours)
 
