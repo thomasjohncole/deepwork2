@@ -1,0 +1,18 @@
+<html>
+<body>
+
+    <h1>Edit the Entry for "{{ day_to_edit.work_date }}"
+
+    <form method='POST' action="{{url_for('editDay', work_date = day_to_edit.work_date)}}">
+
+            <p>New Date: <input type='text' name='work_date' size='35' value='{{day_to_edit.work_date}}'></p>
+
+            <p>Hours Worked: <input type='text' name='hours_worked' size='35' value='{{day_to_edit.hours_worked }}'></p>
+
+            <p>Remarks: <input type='text' name='remarks' size='55' value='{{day_to_edit.remarks }}'></p>
+
+            <button type ='submit'>Submit</button>
+        </form>
+
+</body>
+</html>
