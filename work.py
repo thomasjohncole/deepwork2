@@ -51,7 +51,7 @@ def addDay():
     if request.method == 'POST':
         new_date = Dailyhours(
             work_date = datetime.strptime(
-                request.form['work_date'], "%Y-%m-%d"), # .strftime('%A'),
+                request.form['work_date'], "%Y-%m-%d"),
             hours_worked = (request.form['hours_worked']),
             remarks = (request.form['remarks'])
             )
@@ -74,6 +74,23 @@ def deleteDay(work_date):
         return redirect(url_for('indexPage'))
     else:
          return render_template('delete_day.html', day_to_delete = day_to_delete)
+
+
+@app.route('/edit/<date:work_date>/', methods=['GET', 'POST'])
+def editDay(work_date):
+    """ Page to edit a day row entry from the database """
+    day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
+
+    if request.method == 'POST':
+        data = ({'work_date': datetime.strptime(request.form['work_date'], "%Y-%m-%d"),
+                'hours_worked': request.form['hours_worked'],
+                'remarks': request.form['remarks']}
+                )
+        session.query(Dailyhours).filter_by(work_date = work_date).update(data)
+        session.commit()
+        return redirect(url_for('indexPage'))
+    else:
+         return render_template('edit_day.html', day_to_edit = day_to_edit)
 
 
 if __name__ == '__main__':
