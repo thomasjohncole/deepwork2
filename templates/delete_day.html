@@ -1,1 +1,15 @@
-<h1> Page to Delete a Day </h1>
+<html>
+<body>
+
+    <div class='header'>
+        <h1>Are you sure you want to delete "{{ day_to_delete.work_date }}" from the list?</h1>
+    </div>
+
+    <div class='content'>
+        <form method='POST' action="{{url_for('deleteDay', work_date = day_to_delete.work_date)}}">
+            <button type='submit'>HELL YES!</button>
+        </form>
+    </div>
+
+</body>
+</html>

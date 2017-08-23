@@ -69,13 +69,11 @@ def deleteDay(work_date):
 
     if request.method == 'POST':
         session.delete(day_to_delete)
-        # flash('%s Successfully Deleted' % restaurantToDelete.name)
         session.commit()
+        # flash message here
         return redirect(url_for('indexPage'))
     else:
          return render_template('delete_day.html', day_to_delete = day_to_delete)
-        # return render_template('add_day.html')
-
 
 
 if __name__ == '__main__':
