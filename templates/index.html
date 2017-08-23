@@ -6,7 +6,7 @@
 
         {% for item in list %}
 
-            <tr><td>{{ item.work_date }}</td><td> - {{item.hours_worked}} hours</td> - <td> - {{item.remarks}}</td>
+            <tr><td>{{ item.work_date }}</td><td> - {{ item.work_date.strftime('%A') }}<td> - {{ item.hours_worked }} hours</td><td> - {{ item.remarks }}</td>
             <td><a href="{{url_for('editDay', work_date = item.work_date)}}"> Edit</a></td>
             <td><a href="{{url_for('deleteDay', work_date = item.work_date)}}"> Delete</a></td></tr>
 
