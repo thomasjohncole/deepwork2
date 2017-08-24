@@ -1,0 +1,25 @@
+<html>
+<body>
+    <h2>Deep Work: "The ability to focus without distraction on a cognitively demanding task."</h2>
+
+    <p><a href={{url_for('addDay')}}>Add Day</a></p>
+        <table>
+
+        <tr><th>Date</th><th>Day</th><th>Hours</th><th>Remarks</th></tr>
+        <tr></tr>
+
+        {% for item in list %}
+
+            <tr><td>{{ item.work_date }}</td><td> - {{ item.work_date.strftime('%A') }}<td> - {{ item.hours_worked }} hours</td><td> - {{ item.remarks }}</td>
+            <td><a href="{{url_for('editDay', work_date = item.work_date)}}"> Edit</a></td>
+            <td><a href="{{url_for('deleteDay', work_date = item.work_date)}}"> Delete</a></td></tr>
+
+        {% endfor %}
+
+        </table></br>
+
+        Running total hours worked: {{total_hours[0]}} </br>
+
+    </div>
+</body>
+</html>
