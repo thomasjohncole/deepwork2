@@ -7,6 +7,8 @@ from database_setup import Base, Dailyhours
 from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
+# add import for extract
+from sqlalchemy import extract
 
 engine = create_engine('sqlite:///deepwork.db')
 Base.metadata.bind = engine
@@ -41,10 +43,23 @@ app.url_map.converters['date'] = DateConverter
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
-    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
+    current_month_number = datetime.today().month
+    current_month_name = datetime.today().strftime("%B")
 
-    return render_template('index.html', list = list, total_hours = total_hours)
+    hours_worked_month = (
+    session.query(func.sum(Dailyhours.hours_worked))
+    .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
+    )
+
+    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(22)
+
+    return render_template(
+        'index.html',
+        list = list,
+        total_hours = total_hours,
+        current_month_name = current_month_name,
+        hours_worked_month = hours_worked_month)
 
 @app.route('/add/', methods=['GET', 'POST'])
 def addDay():
