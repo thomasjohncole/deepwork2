@@ -109,6 +109,21 @@ def editDay(work_date):
          return render_template('edit_day.html', day_to_edit = day_to_edit)
 
 
+@app.route('/month/<int:month>/')
+def displayMonth(month):
+    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+
+    list = (
+        session.query(Dailyhours).order_by(Dailyhours.work_date)
+        .filter(extract('month', Dailyhours.work_date)==month)
+        )
+
+    return render_template(
+        'display_month.html',
+        list = list,
+        total_hours = total_hours,)
+
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host = '0.0.0.0', port = 5000)
