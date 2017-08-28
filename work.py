@@ -10,7 +10,7 @@ from werkzeug.routing import BaseConverter, ValidationError
 # add import for extract
 from sqlalchemy import extract
 
-# test branch
+# test branch monthurl
 
 engine = create_engine('sqlite:///deepwork.db')
 Base.metadata.bind = engine
@@ -111,19 +111,27 @@ def editDay(work_date):
          return render_template('edit_day.html', day_to_edit = day_to_edit)
 
 
-@app.route('/month/<int:month>/')
-def displayMonth(month):
+@app.route('/month/<int:month>/<int:year>/')
+def displayMonth(month, year):
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+
+    total_month_hours = (
+            session.query(func.sum(Dailyhours.hours_worked))
+            .filter(extract('month', Dailyhours.work_date)==month)
+            .filter(extract('year', Dailyhours.work_date)==year)
+            )
 
     list = (
         session.query(Dailyhours).order_by(Dailyhours.work_date)
         .filter(extract('month', Dailyhours.work_date)==month)
+        .filter(extract('year', Dailyhours.work_date)==year)
         )
 
     return render_template(
         'display_month.html',
         list = list,
-        total_hours = total_hours,)
+        total_hours = total_hours,
+        total_month_hours = total_month_hours)
 
 
 if __name__ == '__main__':
