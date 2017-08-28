@@ -54,7 +54,7 @@ def indexPage():
     )
 
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(22)
+    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
 
     return render_template(
         'index.html',
