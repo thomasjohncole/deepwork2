@@ -114,11 +114,12 @@ def editDay(work_date):
 @app.route('/month/<int:month>/<int:year>/')
 def displayMonth(month, year):
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+    month_name = date(1900, month, 1).strftime('%B')
 
     total_month_hours = (
             session.query(func.sum(Dailyhours.hours_worked))
             .filter(extract('month', Dailyhours.work_date)==month)
-            .filter(extract('year', Dailyhours.work_date)==year)
+            .filter(extract('year', Dailyhours.work_date)==year).one()
             )
 
     list = (
@@ -131,7 +132,8 @@ def displayMonth(month, year):
         'display_month.html',
         list = list,
         total_hours = total_hours,
-        total_month_hours = total_month_hours)
+        total_month_hours = total_month_hours,
+        month_name = month_name)
 
 
 if __name__ == '__main__':
