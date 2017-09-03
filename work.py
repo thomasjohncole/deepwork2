@@ -53,6 +53,11 @@ def indexPage():
     .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
     )
 
+    days_worked_month = (
+    session.query(func.count(Dailyhours.work_date))
+    .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
+    )
+
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
     list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
 
@@ -61,7 +66,8 @@ def indexPage():
         list = list,
         total_hours = total_hours,
         current_month_name = current_month_name,
-        hours_worked_month = hours_worked_month)
+        hours_worked_month = hours_worked_month,
+        days_worked_month = days_worked_month)
 
 @app.route('/add/', methods=['GET', 'POST'])
 def addDay():
