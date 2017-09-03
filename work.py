@@ -122,6 +122,12 @@ def displayMonth(month, year):
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
     month_name = date(1900, month, 1).strftime('%B')
 
+    total_month_days = (
+            session.query(func.count(Dailyhours.hours_worked))
+            .filter(extract('month', Dailyhours.work_date)==month)
+            .filter(extract('year', Dailyhours.work_date)==year).one()
+            )
+
     total_month_hours = (
             session.query(func.sum(Dailyhours.hours_worked))
             .filter(extract('month', Dailyhours.work_date)==month)
@@ -139,6 +145,7 @@ def displayMonth(month, year):
         list = list,
         total_hours = total_hours,
         total_month_hours = total_month_hours,
+        total_month_days = total_month_days,
         month_name = month_name)
 
 
