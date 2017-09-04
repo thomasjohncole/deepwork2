@@ -134,6 +134,9 @@ def displayMonth(month, year):
             .filter(extract('year', Dailyhours.work_date)==year).one()
             )
 
+    a = total_month_hours[0] / total_month_days[0]
+    avg_hrs_day = format(a, '.2f')
+
     list = (
         session.query(Dailyhours).order_by(Dailyhours.work_date)
         .filter(extract('month', Dailyhours.work_date)==month)
@@ -146,6 +149,7 @@ def displayMonth(month, year):
         total_hours = total_hours,
         total_month_hours = total_month_hours,
         total_month_days = total_month_days,
+        avg_hrs_day = avg_hrs_day,
         month_name = month_name)
 
 
