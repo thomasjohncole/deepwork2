@@ -2,11 +2,17 @@
 <body>
     <h2><a href={{url_for('indexPage')}}>Deep Work:</a> "The ability to focus without distraction on a cognitively demanding task."</h2>
 
-    <h3>This is the month-view page, it displays all days worked for a particular month</h3>
+    <h3>Month View for {{ month_name }}</h3>
+
+    Total days worked for month of {{ month_name }}: {{ total_month_days[0] }} </br>
+    Total hours worked for month of {{ month_name }}: {{ total_month_hours[0] }} </br>
+    Average hours per day worked for month of {{ month_name }}: {{ avg_hrs_day }} </br>
+    Running total hours worked: {{ total_hours[0] }} </br>
 
     <p><a href={{url_for('addDay')}}>Add Day</a>
 
-    Display Month: <a href={{url_for('displayMonth', month=5, year=2017)}}>May</a>
+    Display Month: <a href={{url_for('displayMonth', month=4, year=2017)}}>April</a>
+                   <a href={{url_for('displayMonth', month=5, year=2017)}}>May</a>
                    <a href={{url_for('displayMonth', month=6, year=2017)}}>June</a>
                    <a href={{url_for('displayMonth', month=7, year=2017)}}>July</a>
                    <a href={{url_for('displayMonth', month=8, year=2017)}}>August</a>
@@ -26,11 +32,6 @@
         {% endfor %}
 
         </table></br>
-
-        Total days worked for month of {{ month_name }}: {{ total_month_days[0] }} </br>
-        Total hours worked for month of {{ month_name }}: {{ total_month_hours[0] }} </br>
-        Average hours per day worked for month of {{ month_name }}: {{ avg_hrs_day }} </br>
-        Running total hours worked: {{ total_hours[0] }} </br>
 
     </div>
 </body>

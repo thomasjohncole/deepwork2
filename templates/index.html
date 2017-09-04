@@ -4,20 +4,17 @@
 
     <h3>This is the index page, it displays the last 15 days in descending order</h3>
 
+    Total days worked this {{ current_month_name }}: {{ days_worked_month[0] }} </br>
+        Total hours worked this {{ current_month_name }}: {{ hours_worked_month[0] }} </br>
+        Running total hours worked: {{total_hours[0]}} </br>
+
     <p><a href={{url_for('addDay')}}>Add Day</a>
-    Display Month: <a href={{url_for('displayMonth', month=5, year=2017)}}>May</a>
+    Display Month: <a href={{url_for('displayMonth', month=4, year=2017)}}>April</a>
+                   <a href={{url_for('displayMonth', month=5, year=2017)}}>May</a>
                    <a href={{url_for('displayMonth', month=6, year=2017)}}>June</a>
                    <a href={{url_for('displayMonth', month=7, year=2017)}}>July</a>
                    <a href={{url_for('displayMonth', month=8, year=2017)}}>August</a>
                    <a href={{url_for('displayMonth', month=9, year=2017)}}>September</a></p>
-
-    <select>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-    </select>
 
 
         <table>
@@ -34,10 +31,6 @@
         {% endfor %}
 
         </table></br>
-
-        Total days worked this {{ current_month_name }}: {{ days_worked_month[0] }} </br>
-        Total hours worked this {{ current_month_name }}: {{ hours_worked_month[0] }} </br>
-        Running total hours worked: {{total_hours[0]}} </br>
 
 
     </div>
