@@ -1,16 +1,12 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 app = Flask(__name__)
 
-from sqlalchemy import create_engine, func, update
+from sqlalchemy import create_engine, func, update, extract
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Dailyhours
 from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
-# add import for extract
-from sqlalchemy import extract
-
-# test branch monthurl
 
 engine = create_engine('sqlite:///deepwork.db')
 Base.metadata.bind = engine
@@ -41,7 +37,6 @@ class DateConverter(BaseConverter):
 
 app.url_map.converters['date'] = DateConverter
 
-
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
@@ -52,12 +47,10 @@ def indexPage():
     session.query(func.sum(Dailyhours.hours_worked))
     .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
     )
-
     days_worked_month = (
     session.query(func.count(Dailyhours.work_date))
     .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
     )
-
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
     list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
 
@@ -69,6 +62,7 @@ def indexPage():
         hours_worked_month = hours_worked_month,
         days_worked_month = days_worked_month)
 
+
 @app.route('/add/', methods=['GET', 'POST'])
 def addDay():
     """ Form to add a new work day entry, and logic to POST it to db """
@@ -79,12 +73,12 @@ def addDay():
             hours_worked = (request.form['hours_worked']),
             remarks = (request.form['remarks'])
             )
-
         session.add(new_date)
         session.commit()
         return redirect(url_for('indexPage'))
     else:
         return render_template('add_day.html')
+
 
 @app.route('/delete/<date:work_date>/', methods=['GET', 'POST'])
 def deleteDay(work_date):
@@ -127,14 +121,12 @@ def displayMonth(month, year):
             .filter(extract('month', Dailyhours.work_date)==month)
             .filter(extract('year', Dailyhours.work_date)==year).one()
             )
-
     total_month_hours = (
             session.query(func.sum(Dailyhours.hours_worked))
             .filter(extract('month', Dailyhours.work_date)==month)
             .filter(extract('year', Dailyhours.work_date)==year).one()
             )
-
-    a = total_month_hours[0] / total_month_days[0]
+    a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
     avg_hrs_day = format(a, '.2f')
 
     list = (
@@ -142,7 +134,6 @@ def displayMonth(month, year):
         .filter(extract('month', Dailyhours.work_date)==month)
         .filter(extract('year', Dailyhours.work_date)==year)
         )
-
     return render_template(
         'display_month.html',
         list = list,
