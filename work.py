@@ -126,8 +126,12 @@ def displayMonth(month, year):
             .filter(extract('month', Dailyhours.work_date)==month)
             .filter(extract('year', Dailyhours.work_date)==year).one()
             )
-    a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
-    avg_hrs_day = format(a, '.2f')
+
+    if total_month_days[0] == 0:
+        avg_hrs_day = 0
+    else:
+        a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
+        avg_hrs_day = format(a, '.2f')
 
     list = (
         session.query(Dailyhours).order_by(Dailyhours.work_date)
