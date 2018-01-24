@@ -22,7 +22,6 @@ session = DBSession()
 # Add custom converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
 class DateConverter(BaseConverter):
     """Extracts a ISO8601 date from the path and validates it."""
-
     regex = r'\d{4}-\d{2}-\d{2}'
 
     def to_python(self, value):
@@ -145,7 +144,8 @@ def displayMonth(month, year):
         total_month_hours = total_month_hours,
         total_month_days = total_month_days,
         avg_hrs_day = avg_hrs_day,
-        month_name = month_name)
+        month_name = month_name,
+        year = year)
 
 
 if __name__ == '__main__':
