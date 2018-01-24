@@ -41,14 +41,19 @@ def indexPage():
     """ Shows the list of workdays"""
     current_month_number = datetime.today().month
     current_month_name = datetime.today().strftime("%B")
+    current_year = datetime.today().year
 
     hours_worked_month = (
-    session.query(func.sum(Dailyhours.hours_worked))
-    .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
+        session.query(func.sum(Dailyhours.hours_worked))
+        .filter(extract('month', Dailyhours.work_date)==current_month_number)
+        .filter(extract('year', Dailyhours.work_date)==current_year)
+        .one()
     )
     days_worked_month = (
-    session.query(func.count(Dailyhours.work_date))
-    .filter(extract('month', Dailyhours.work_date)==current_month_number).one()
+        session.query(func.count(Dailyhours.work_date))
+        .filter(extract('month', Dailyhours.work_date)==current_month_number)
+        .filter(extract('year', Dailyhours.work_date)==current_year)
+        .one()
     )
     total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
     list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
@@ -59,7 +64,9 @@ def indexPage():
         total_hours = total_hours,
         current_month_name = current_month_name,
         hours_worked_month = hours_worked_month,
-        days_worked_month = days_worked_month)
+        days_worked_month = days_worked_month,
+        year = current_year
+        )
 
 
 @app.route('/add/', methods=['GET', 'POST'])
