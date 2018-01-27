@@ -8,7 +8,7 @@
         Total hours worked this {{ current_month_name }} {{ year }}: {{ hours_worked_month[0] }} </br>
         Running total hours worked: {{total_hours[0]}} </br>
 
-    <p><a href={{url_for('addDay')}}>Add Day</a>
+    <p><a href={{url_for('addDay')}}>Add Day</a></br>
 
     2018 Display Month: <a href={{url_for('displayMonth', month=1, year=2018)}}>January</a>
                    <a href={{url_for('displayMonth', month=2, year=2018)}}>February</a><br>
@@ -25,8 +25,6 @@
                    <a href={{url_for('displayMonth', month=10, year=2017)}}>October</a>
                    <a href={{url_for('displayMonth', month=11, year=2017)}}>November</a>
                    <a href={{url_for('displayMonth', month=12, year=2017)}}>December</a></p>
-
-
 
         <table>
 
