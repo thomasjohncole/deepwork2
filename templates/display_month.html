@@ -7,12 +7,14 @@
     Total days worked for month of {{ month_name }}: {{ total_month_days[0] }} </br>
     Total hours worked for month of {{ month_name }}: {{ total_month_hours[0] }} </br>
     Average hours per day worked for month of {{ month_name }}: {{ avg_hrs_day }} </br>
-    Running total hours worked: {{ total_hours[0] }} </br>
+    Running total hours of Deep Work: {{ total_hours[0] }} </br>
 
     <p><a href={{url_for('addDay')}}>Add Day</a></br>
 
     2018 Display Month: <a href={{url_for('displayMonth', month=1, year=2018)}}>January</a>
-                   <a href={{url_for('displayMonth', month=2, year=2018)}}>February</a><br>
+                   <a href={{url_for('displayMonth', month=2, year=2018)}}>February</a>
+                   <a href={{url_for('displayMonth', month=3, year=2018)}}>March</a>
+                   <a href={{url_for('displayMonth', month=4, year=2018)}}>April</a></br>
 
     2017 Display Month: <a href={{url_for('displayMonth', month=1, year=2017)}}>January</a>
                    <a href={{url_for('displayMonth', month=2, year=2017)}}>February</a>
