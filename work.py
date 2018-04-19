@@ -1,5 +1,9 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
+from flask_bootstrap import Bootstrap
+
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+Bootstrap(app)
 
 from sqlalchemy import create_engine, func, update, extract
 from sqlalchemy.orm import sessionmaker
@@ -106,8 +110,7 @@ def editDay(work_date):
     day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
 
     if request.method == 'POST':
-        data = ({'work_date': datetime.strptime(request.form['work_date'], "%Y-%m-%d"),
-                'hours_worked': request.form['hours_worked'],
+        data = ({'hours_worked': request.form['hours_worked'],
                 'remarks': request.form['remarks']}
                 )
         session.query(Dailyhours).filter_by(work_date = work_date).update(data)

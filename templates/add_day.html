@@ -1,12 +1,45 @@
-<html>
-<body>
+{% extends "bootstrap/base.html" %}
 
-    <form method='POST' action="{{ url_for('addDay') }}">
-            <p>New Date: <input type='text' name='work_date' size='35'></p>
-            <p>Hours Worked: <input type='text' name='hours_worked' size='35'></p>
-            <p>Remarks: <input type='text' name='remarks' size='75'></p>
-            <button type ='submit'>Submit</button>
-        </form>
+{% block content %}
 
-</body>
-</html>
+<div class="container">
+
+    <h2><a href={{url_for('indexPage')}}>Deep Work:</a> "The ability to focus without distraction on a cognitively demanding task."</h2>
+
+    <form class="form-horizontal bg-info" method='POST' action="{{ url_for('addDay') }}">
+
+        <div class="row">
+
+            <label for="inputDate" class="col-sm-2 control-label">New Date:</label>
+
+            <div class="col-sm-4">
+                <input type="text" name="work_date" class="form-control" id="inputDate" placeholder="Date">
+            </div>
+
+        </div>
+        <div class="row">
+
+            <label for="inputHours" class="col-sm-2 control-label">Hours Worked:</label>
+
+            <div class="col-sm-2">
+                <input type="text" name="hours_worked" size="35" class="form-control" id="inputHours" placeholder="Hours Worked">
+            </div>
+
+        </div>
+        <div class="row">
+
+            <label for="inputRemarks" class="col-sm-2 control-label">Remarks:</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="remarks" size="75" class="form-control" id="inputRemarks" placeholder="Remarks">
+            </div>
+
+        </div>
+
+        <button type ='submit'>Submit</button>
+
+    </form>
+
+</div>
+
+{% endblock %}

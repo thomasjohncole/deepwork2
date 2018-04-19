@@ -1,18 +1,38 @@
-<html>
-<body>
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2><a href={{url_for('indexPage')}}>Deep Work:</a> "The ability to focus without distraction on a cognitively demanding task."</h2>
 
     <h2>Edit the Entry for "{{ day_to_edit.work_date }}"</h2>
 
-    <form method='POST' action="{{url_for('editDay', work_date = day_to_edit.work_date)}}">
+    <form class="form-horizontal bg-info" method='POST' action="{{url_for('editDay', work_date = day_to_edit.work_date)}}">
 
-            <p>New Date: <input type='text' name='work_date' size='35' value='{{day_to_edit.work_date}}'></p>
+        <div class="row">
 
-            <p>Hours Worked: <input type='text' name='hours_worked' size='35' value='{{day_to_edit.hours_worked }}'></p>
+            <label for="inputHours" class="col-sm-2 control-label">Hours Worked:</label>
 
-            <p>Remarks: <input type='text' name='remarks' size='75' value='{{day_to_edit.remarks }}'></p>
+            <div class="col-sm-2">
+                <input type="text" name="hours_worked" class="form-control" id="inputHours" value="{{day_to_edit.hours_worked }}">
+            </div>
 
-            <button type ='submit'>Submit</button>
-        </form>
+        </div>
+        <div class="row">
 
-</body>
-</html>
+            <label for="inputRemarks" class="col-sm-2 control-label">Remarks:</label>
+
+            <div class="col-sm-9">
+                <input type="text" name="remarks" size="75" class="form-control" id="inputRemarks" value="{{day_to_edit.remarks }}">
+            </div>
+
+        </div>
+
+        <button type ='submit'>Submit</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
