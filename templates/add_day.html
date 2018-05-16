@@ -4,7 +4,9 @@
 
 <div class="container">
 
-    <h2><a href={{url_for('indexPage')}}>Deep Work:</a> "The ability to focus without distraction on a cognitively demanding task."</h2>
+    <nav class="navbar bg-info">
+        <h2 class="text-center"><a href={{url_for('indexPage')}}>Deep Work:</a><small> "The ability to focus without distraction on a cognitively demanding task."</small></h2>
+    </nav>
 
     <form class="form-horizontal bg-info" method='POST' action="{{ url_for('addDay') }}">
 
