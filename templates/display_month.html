@@ -4,9 +4,11 @@
 
 <div class="container">
 
-    <h2><a href={{url_for('indexPage')}}>Deep Work:</a> "The ability to focus without distraction on a cognitively demanding task."</h2>
+    <nav class="navbar bg-info">
+        <h2 class="text-center"><a href={{url_for('indexPage')}}>Deep Work:</a><small> "The ability to focus without distraction on a cognitively demanding task."</small></h2>
+    </nav>
 
-    <h3>Month View for {{ month_name }} {{ year }}</h3>
+    <h4>Month View for {{ month_name }} {{ year }}</h4>
 
     Total days worked for month of {{ month_name }}: {{ total_month_days[0] }} </br>
     Total hours worked for month of {{ month_name }}: {{ total_month_hours[0] }} </br>
