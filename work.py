@@ -157,6 +157,59 @@ def displayMonth(month, year):
         month_name = month_name,
         year = year)
 
+@app.route('/totals')
+def monthly_totals():
+
+    def displayMonth(month, year):
+        total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+        month_name = date(1900, month, 1).strftime('%B')
+
+        total_month_days = (
+                session.query(func.count(Dailyhours.hours_worked))
+                .filter(extract('month', Dailyhours.work_date)==month)
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+        total_month_hours = (
+                session.query(func.sum(Dailyhours.hours_worked))
+                .filter(extract('month', Dailyhours.work_date)==month)
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+
+        if total_month_days[0] == 0:
+            avg_hrs_day = 0
+        else:
+            a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
+            avg_hrs_day = format(a, '.2f')
+
+        month_values = ([year, month_name,  total_month_days[0], total_month_hours[0], avg_hrs_day])
+
+        return month_values
+
+
+    month= datetime.today().month
+    year = datetime.today().year
+
+    monthly_totals = []
+
+    earliest_year = session.query(func.min(Dailyhours.work_date)).one()
+    print(earliest_year[0].year)
+    earliest_year = earliest_year[0].year
+
+    while year >= earliest_year:
+
+        while month > 0:
+            month_values = displayMonth(month, year)
+            monthly_totals.append(month_values)
+            month = month - 1
+
+        year = year -1
+        month = 12
+
+    return render_template(
+        'monthly_totals.html',
+        totals = monthly_totals,
+        )
+
 
 if __name__ == '__main__':
     app.debug = True

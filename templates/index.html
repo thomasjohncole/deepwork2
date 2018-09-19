@@ -14,6 +14,8 @@
         Total hours worked this {{ current_month_name }} {{ year }}: {{ hours_worked_month[0] }} </br>
         Running total hours of Deep Work: {{total_hours[0]}} </br>
 
+    <a href={{url_for('monthly_totals')}}>Monthly Totals</a>
+
     <p><a href={{url_for('addDay')}}>Add Day</a></br>
 
     {% include '_month_links.html' %}
