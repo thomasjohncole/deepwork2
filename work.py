@@ -42,8 +42,8 @@ app.url_map.converters['date'] = DateConverter
 
 
 def getMonthValues(month, year):
+        """ calculate values based on integer month and year parameters """
         month_name = date(1900, month, 1).strftime('%B')
-
         total_month_days = (
                 session.query(func.count(Dailyhours.hours_worked))
                 .filter(extract('month', Dailyhours.work_date)==month)
@@ -59,13 +59,14 @@ def getMonthValues(month, year):
         else:
             a = total_month_hours[0] / total_month_days[0]
             avg_hrs_day = format(a, '.2f')
-
+        total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
         month_values = ([
             year,
             month_name,
             total_month_days[0],
             total_month_hours[0],
-            avg_hrs_day
+            avg_hrs_day,
+            total_hours
         ])
         return month_values
 
@@ -73,46 +74,14 @@ def getMonthValues(month, year):
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
-    current_month_number = datetime.today().month
-    current_year = datetime.today().year
-    month_values = getMonthValues(current_month_number, current_year)
-    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
-    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-
-    return render_template(
-        'index.html',
-        list = list,
-        total_hours = total_hours,
-        year = month_values[0],
-        month_name = month_values[1],
-        days_worked_month = month_values[2],
-        hours_worked_month = month_values[3],
-        avg_hrs_day = month_values[4]
-        )
+    month = datetime.today().month
+    year = datetime.today().year
+    return displayMonth(month, year)
 
 
 @app.route('/month/<int:month>/<int:year>/')
 def displayMonth(month, year):
-    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    month_name = date(1900, month, 1).strftime('%B')
-
-    total_month_days = (
-            session.query(func.count(Dailyhours.hours_worked))
-            .filter(extract('month', Dailyhours.work_date)==month)
-            .filter(extract('year', Dailyhours.work_date)==year).one()
-            )
-    total_month_hours = (
-            session.query(func.sum(Dailyhours.hours_worked))
-            .filter(extract('month', Dailyhours.work_date)==month)
-            .filter(extract('year', Dailyhours.work_date)==year).one()
-            )
-
-    if total_month_days[0] == 0:
-        avg_hrs_day = 0
-    else:
-        a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
-        avg_hrs_day = format(a, '.2f')
-
+    month_values = getMonthValues(month, year)
     list = (
         session.query(Dailyhours).order_by(Dailyhours.work_date)
         .filter(extract('month', Dailyhours.work_date)==month)
@@ -121,12 +90,13 @@ def displayMonth(month, year):
     return render_template(
         'display_month.html',
         list = list,
-        total_hours = total_hours,
-        total_month_hours = total_month_hours,
-        total_month_days = total_month_days,
-        avg_hrs_day = avg_hrs_day,
-        month_name = month_name,
-        year = year)
+        year = month_values[0],
+        month_name = month_values[1],
+        days_worked_month = month_values[2],
+        hours_worked_month = month_values[3],
+        avg_hrs_day = month_values[4],
+        total_hours = month_values[5]
+        )
 
 @app.route('/totals')
 def monthly_totals():
