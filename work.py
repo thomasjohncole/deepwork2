@@ -87,6 +87,7 @@ def displayMonth(month, year):
         .filter(extract('month', Dailyhours.work_date)==month)
         .filter(extract('year', Dailyhours.work_date)==year)
         )
+    h4 = ("Month View for {} {}").format(month_values[1], year)
     return render_template(
         'display_month.html',
         list = list,
@@ -95,7 +96,8 @@ def displayMonth(month, year):
         days_worked_month = month_values[2],
         hours_worked_month = month_values[3],
         avg_hrs_day = month_values[4],
-        total_hours = month_values[5]
+        total_hours = month_values[5],
+        h4 = h4,
         )
 
 @app.route('/totals')
@@ -118,10 +120,9 @@ def monthly_totals():
 
         year = year -1
         month = 12
-
+        h4 = "Monthly Totals"
     return render_template(
-        'monthly_totals.html',
-        totals = monthly_totals,
+        'monthly_totals.html',totals = monthly_totals, h4 = h4
         )
 
 
