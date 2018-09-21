@@ -23,7 +23,7 @@ session = DBSession()
 # create an instance of the DBSession  object - to make a changes
 # to the database, we can call a method within the session
 
-# Add custom converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
+# Add converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
 class DateConverter(BaseConverter):
     """Extracts a ISO8601 date from the path and validates it."""
     regex = r'\d{4}-\d{2}-\d{2}'
@@ -102,27 +102,35 @@ def displayMonth(month, year):
 
 @app.route('/totals')
 def monthly_totals():
+    ''' generate totals for each month of work '''
     month = datetime.today().month
     year = datetime.today().year
 
     monthly_totals = []
+    # find the earliest date in the database
+    earliest_date = session.query(func.min(Dailyhours.work_date)).one()
+    # get the year value out of that
+    earliest_year = earliest_date[0].year
 
-    earliest_year = session.query(func.min(Dailyhours.work_date)).one()
-    print(earliest_year[0].year)
-    earliest_year = earliest_year[0].year
-
+    # this nested loop produces an array of values for each month worked
     while year >= earliest_year:
-
         while month > 0:
+            # get the current month values
             month_values = getMonthValues(month, year)
+            # add them to the monthly_totals array
             monthly_totals.append(month_values)
+            # then decrement until we run out
             month = month - 1
-
+        # decrement the year until we run out
         year = year -1
         month = 12
-        h4 = "Monthly Totals"
+
+    h4 = "Monthly Totals"
     return render_template(
-        'monthly_totals.html',totals = monthly_totals, h4 = h4
+        'monthly_totals.html',
+        totals = monthly_totals,
+        h4 = h4,
+        total_hours = month_values[5]
         )
 
 

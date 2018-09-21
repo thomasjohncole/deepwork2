@@ -4,37 +4,22 @@
 
 <div class="container">
 
-    <nav class="navbar bg-info">
-        <h2 class="text-center"><a href={{url_for('indexPage')}}>Deep Work:</a><small> "The ability to focus without distraction on a cognitively demanding task."</small></h2>
-    </nav>
+    {% include '_nav_header.html' %}
 
-    <h4>{{ h4 }}</h4>
+    <table class='table table-striped table-condensed'>
 
-    Total days worked for {{ month_name }} {{ year }}: {{ days_worked_month }} </br>
-    Total hours worked for {{ month_name }} {{ year }}: {{ hours_worked_month }} </br>
-    Average hours per day worked for {{ month_name }} {{ year }}: {{ avg_hrs_day }} </br>
-    Running total hours of Deep Work: {{total_hours[0]}} </br>
+    <tr><th>Date</th><th>Day</th><th>Hours</th><th>Remarks</th></tr>
+    <tr></tr>
 
-    <a href={{url_for('monthly_totals')}}>Monthly Totals</a>
+    {% for item in list %}
 
-    <p><a href={{url_for('addDay')}}>Add Day</a></br>
+        <tr><td>{{ item.work_date }}</td><td>{{ item.work_date.strftime('%A') }}<td>{{ item.hours_worked }} hours</td><td>{{ item.remarks }}</td>
+        <td><a href="{{url_for('editDay', work_date = item.work_date)}}"> Edit</a></td>
+        <td><a href="{{url_for('deleteDay', work_date = item.work_date)}}"> Delete</a></td></tr>
 
-    {% include '_month_links.html' %}
+    {% endfor %}
 
-        <table class='table table-striped table-condensed'>
-
-        <tr><th>Date</th><th>Day</th><th>Hours</th><th>Remarks</th></tr>
-        <tr></tr>
-
-        {% for item in list %}
-
-            <tr><td>{{ item.work_date }}</td><td>{{ item.work_date.strftime('%A') }}<td>{{ item.hours_worked }} hours</td><td>{{ item.remarks }}</td>
-            <td><a href="{{url_for('editDay', work_date = item.work_date)}}"> Edit</a></td>
-            <td><a href="{{url_for('deleteDay', work_date = item.work_date)}}"> Delete</a></td></tr>
-
-        {% endfor %}
-
-        </table></br>
+    </table></br>
 
 </div>
 
