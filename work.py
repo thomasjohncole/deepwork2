@@ -23,7 +23,7 @@ session = DBSession()
 # create an instance of the DBSession  object - to make a changes
 # to the database, we can call a method within the session
 
-# Add custom converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
+# Add converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
 class DateConverter(BaseConverter):
     """Extracts a ISO8601 date from the path and validates it."""
     regex = r'\d{4}-\d{2}-\d{2}'
@@ -40,36 +40,97 @@ class DateConverter(BaseConverter):
 
 app.url_map.converters['date'] = DateConverter
 
+
+def getMonthValues(month, year):
+        """ calculate values based on integer month and year parameters """
+        month_name = date(1900, month, 1).strftime('%B')
+        total_month_days = (
+                session.query(func.count(Dailyhours.hours_worked))
+                .filter(extract('month', Dailyhours.work_date)==month)
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+        total_month_hours = (
+                session.query(func.sum(Dailyhours.hours_worked))
+                .filter(extract('month', Dailyhours.work_date)==month)
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+        if total_month_days[0] == 0:
+            avg_hrs_day = 0 # conditional for divide by zero
+        else:
+            a = total_month_hours[0] / total_month_days[0]
+            avg_hrs_day = format(a, '.2f')
+        total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+        month_values = ([
+            year,
+            month_name,
+            total_month_days[0],
+            total_month_hours[0],
+            avg_hrs_day,
+            total_hours
+        ])
+        return month_values
+
+
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
-    current_month_number = datetime.today().month
-    current_month_name = datetime.today().strftime("%B")
-    current_year = datetime.today().year
+    month = datetime.today().month
+    year = datetime.today().year
+    return displayMonth(month, year)
 
-    hours_worked_month = (
-        session.query(func.sum(Dailyhours.hours_worked))
-        .filter(extract('month', Dailyhours.work_date)==current_month_number)
-        .filter(extract('year', Dailyhours.work_date)==current_year)
-        .one()
-    )
-    days_worked_month = (
-        session.query(func.count(Dailyhours.work_date))
-        .filter(extract('month', Dailyhours.work_date)==current_month_number)
-        .filter(extract('year', Dailyhours.work_date)==current_year)
-        .one()
-    )
-    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    list = session.query(Dailyhours).order_by(Dailyhours.work_date.desc()).limit(15)
 
+@app.route('/month/<int:month>/<int:year>/')
+def displayMonth(month, year):
+    month_values = getMonthValues(month, year)
+    list = (
+        session.query(Dailyhours).order_by(Dailyhours.work_date)
+        .filter(extract('month', Dailyhours.work_date)==month)
+        .filter(extract('year', Dailyhours.work_date)==year)
+        )
+    h4 = ("Month View for {} {}").format(month_values[1], year)
     return render_template(
-        'index.html',
+        'display_month.html',
         list = list,
-        total_hours = total_hours,
-        current_month_name = current_month_name,
-        hours_worked_month = hours_worked_month,
-        days_worked_month = days_worked_month,
-        year = current_year
+        year = month_values[0],
+        month_name = month_values[1],
+        days_worked_month = month_values[2],
+        hours_worked_month = month_values[3],
+        avg_hrs_day = month_values[4],
+        total_hours = month_values[5],
+        h4 = h4,
+        )
+
+@app.route('/totals')
+def monthly_totals():
+    ''' generate totals for each month of work '''
+    month = datetime.today().month
+    year = datetime.today().year
+
+    monthly_totals = []
+    # find the earliest date in the database
+    earliest_date = session.query(func.min(Dailyhours.work_date)).one()
+    # get the year value out of that
+    earliest_year = earliest_date[0].year
+
+    # this nested loop produces an array of values for each month worked
+    while year >= earliest_year:
+        while month > 0:
+            # get the current month values
+            month_values = getMonthValues(month, year)
+            # add them to the monthly_totals array
+            monthly_totals.append(month_values)
+            # then decrement until we run out
+            month = month - 1
+        # decrement the year until we run out
+        year = year -1
+        month = 12
+
+    h4 = "Monthly Totals"
+    return render_template(
+        'monthly_totals.html',
+        totals = monthly_totals,
+        h4 = h4,
+        total_hours = month_values[5]
         )
 
 
@@ -118,97 +179,6 @@ def editDay(work_date):
         return redirect(url_for('indexPage'))
     else:
          return render_template('edit_day.html', day_to_edit = day_to_edit)
-
-
-@app.route('/month/<int:month>/<int:year>/')
-def displayMonth(month, year):
-    total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-    month_name = date(1900, month, 1).strftime('%B')
-
-    total_month_days = (
-            session.query(func.count(Dailyhours.hours_worked))
-            .filter(extract('month', Dailyhours.work_date)==month)
-            .filter(extract('year', Dailyhours.work_date)==year).one()
-            )
-    total_month_hours = (
-            session.query(func.sum(Dailyhours.hours_worked))
-            .filter(extract('month', Dailyhours.work_date)==month)
-            .filter(extract('year', Dailyhours.work_date)==year).one()
-            )
-
-    if total_month_days[0] == 0:
-        avg_hrs_day = 0
-    else:
-        a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
-        avg_hrs_day = format(a, '.2f')
-
-    list = (
-        session.query(Dailyhours).order_by(Dailyhours.work_date)
-        .filter(extract('month', Dailyhours.work_date)==month)
-        .filter(extract('year', Dailyhours.work_date)==year)
-        )
-    return render_template(
-        'display_month.html',
-        list = list,
-        total_hours = total_hours,
-        total_month_hours = total_month_hours,
-        total_month_days = total_month_days,
-        avg_hrs_day = avg_hrs_day,
-        month_name = month_name,
-        year = year)
-
-@app.route('/totals')
-def monthly_totals():
-
-    def displayMonth(month, year):
-        total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
-        month_name = date(1900, month, 1).strftime('%B')
-
-        total_month_days = (
-                session.query(func.count(Dailyhours.hours_worked))
-                .filter(extract('month', Dailyhours.work_date)==month)
-                .filter(extract('year', Dailyhours.work_date)==year).one()
-                )
-        total_month_hours = (
-                session.query(func.sum(Dailyhours.hours_worked))
-                .filter(extract('month', Dailyhours.work_date)==month)
-                .filter(extract('year', Dailyhours.work_date)==year).one()
-                )
-
-        if total_month_days[0] == 0:
-            avg_hrs_day = 0
-        else:
-            a = total_month_hours[0] / total_month_days[0] # need conditional for divide by zero here
-            avg_hrs_day = format(a, '.2f')
-
-        month_values = ([year, month_name,  total_month_days[0], total_month_hours[0], avg_hrs_day])
-
-        return month_values
-
-
-    month= datetime.today().month
-    year = datetime.today().year
-
-    monthly_totals = []
-
-    earliest_year = session.query(func.min(Dailyhours.work_date)).one()
-    print(earliest_year[0].year)
-    earliest_year = earliest_year[0].year
-
-    while year >= earliest_year:
-
-        while month > 0:
-            month_values = displayMonth(month, year)
-            monthly_totals.append(month_values)
-            month = month - 1
-
-        year = year -1
-        month = 12
-
-    return render_template(
-        'monthly_totals.html',
-        totals = monthly_totals,
-        )
 
 
 if __name__ == '__main__':

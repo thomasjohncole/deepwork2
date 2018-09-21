@@ -4,30 +4,20 @@
 
 <div class="container">
 
-    <nav class="navbar bg-info">
-        <h2 class="text-center"><a href={{url_for('indexPage')}}>Deep Work:</a><small> "The ability to focus without distraction on a cognitively demanding task."</small></h2>
-    </nav>
+    {% include '_nav_header.html' %}
 
-    <h4>Monthly Totals</h4>
+    <table class='table table-striped table-condensed'>
 
+    <tr><th>Year</th><th>Month</th><th>Total Days</th><th>Total Hours</th><th>Hours Per Day</th></tr>
+    <tr></tr>
 
-    <p><a href={{url_for('addDay')}}>Add Day</a></br>
-
-    {% include '_month_links.html' %}
-
-        <table class='table table-striped table-condensed'>
-
-        <tr><th>Year</th><th>Month</th><th>Total Days</th><th>Total Hours</th><th>Hours Per Day</th></tr>
-        <tr></tr>
-        {% for month in totals %}
+    {% for month in totals %}
 
         <tr><td>{{ month[0] }}</td><td>{{ month[1] }}</td><td>{{ month[2] }}</td><td>{{ month[3] }}</td><td>{{ month[4] }}</tr>
 
-        {% endfor %}
+    {% endfor %}
 
-
-
-        </table></br>
+    </table></br>
 
 </div>
 
