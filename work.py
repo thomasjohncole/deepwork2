@@ -137,6 +137,12 @@ def monthly_totals():
 @app.route('/add/', methods=['GET', 'POST'])
 def addDay():
     """ Form to add a new work day entry, and logic to POST it to db """
+    month = datetime.today().month
+    year = datetime.today().year
+    month_values = getMonthValues(month, year)
+
+    h4 = ("Add Day")
+
     if request.method == 'POST':
         new_date = Dailyhours(
             work_date = datetime.strptime(
@@ -148,7 +154,16 @@ def addDay():
         session.commit()
         return redirect(url_for('indexPage'))
     else:
-        return render_template('add_day.html')
+        return render_template(
+            'add_day.html',
+            year = month_values[0],
+            month_name = month_values[1],
+            days_worked_month = month_values[2],
+            hours_worked_month = month_values[3],
+            avg_hrs_day = month_values[4],
+            total_hours = month_values[5],
+            h4 = h4,
+            )
 
 
 @app.route('/delete/<date:work_date>/', methods=['GET', 'POST'])
