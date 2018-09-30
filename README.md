@@ -3,7 +3,7 @@
 ### Tasks
 
 - [ ] Fix header in edit and delete forms
-- [ ] Make header modular and use include across templates
+- [x] Make header modular and use include across templates
 - [ ] Refactor based on best practices for file separation
 - [ ] Add some visualizations, graphs, charts, etc.
 - [ ] Add date picker on form templates
@@ -12,3 +12,4 @@
 - [ ] Deploy a demo of this app to Python Anywhere, Heroku, etc.
 - [ ] Make month links autogenerate based on what is in the db
 - [ ] Add an about page
+- [ ] Error processing for Add day page, can use WTForms here

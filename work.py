@@ -74,9 +74,9 @@ def getMonthValues(month, year):
 @app.route('/')
 def indexPage():
     """ Shows the list of workdays"""
-    month = datetime.today().month
-    year = datetime.today().year
-    return displayMonth(month, year)
+    current_month = datetime.today().month
+    current_year = datetime.today().year
+    return displayMonth(current_month, current_year)
 
 
 @app.route('/month/<int:month>/<int:year>/')
@@ -103,16 +103,19 @@ def displayMonth(month, year):
 @app.route('/totals')
 def monthly_totals():
     ''' generate totals for each month of work '''
-    month = datetime.today().month
-    year = datetime.today().year
+    current_month = datetime.today().month
+    current_year = datetime.today().year
 
+    # define empty list to be used in while loop
     monthly_totals = []
     # find the earliest date in the database
     earliest_date = session.query(func.min(Dailyhours.work_date)).one()
     # get the year value out of that
     earliest_year = earliest_date[0].year
-
+    month = current_month
+    year = current_year
     # this nested loop produces an array of values for each month worked
+    # starting with the current  month and year and decrementing
     while year >= earliest_year:
         while month > 0:
             # get the current month values
@@ -123,14 +126,23 @@ def monthly_totals():
             month = month - 1
         # decrement the year until we run out
         year = year -1
+        # set the month back to 12 once the year is decremented
         month = 12
 
+    # reset month values to current for header_nav template
+    month_values = getMonthValues(current_month, current_year)
     h4 = "Monthly Totals"
+
     return render_template(
         'monthly_totals.html',
         totals = monthly_totals,
         h4 = h4,
-        total_hours = month_values[5]
+        year = month_values[0],
+        month_name = month_values[1],
+        days_worked_month = month_values[2],
+        hours_worked_month = month_values[3],
+        avg_hrs_day = month_values[4],
+        total_hours = month_values[5],
         )
 
 
@@ -171,18 +183,40 @@ def deleteDay(work_date):
     """ Page to delete a day row entry from the database """
     day_to_delete = session.query(Dailyhours).filter_by(work_date = work_date).one()
 
+    month = datetime.today().month
+    year = datetime.today().year
+    month_values = getMonthValues(month, year)
+
+    h4 = "Are you sure you want to delete?"
+
     if request.method == 'POST':
         session.delete(day_to_delete)
         session.commit()
         # flash message here
         return redirect(url_for('indexPage'))
     else:
-         return render_template('delete_day.html', day_to_delete = day_to_delete)
+         return render_template(
+            'delete_day.html',
+            day_to_delete = day_to_delete,
+            year = month_values[0],
+            month_name = month_values[1],
+            days_worked_month = month_values[2],
+            hours_worked_month = month_values[3],
+            avg_hrs_day = month_values[4],
+            total_hours = month_values[5],
+            h4 = h4,
+            )
 
 
 @app.route('/edit/<date:work_date>/', methods=['GET', 'POST'])
 def editDay(work_date):
     """ Page to edit a day row entry from the database """
+    month = datetime.today().month
+    year = datetime.today().year
+    month_values = getMonthValues(month, year)
+
+    h4 = ("Edit Day")
+
     day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
 
     if request.method == 'POST':
@@ -193,7 +227,17 @@ def editDay(work_date):
         session.commit()
         return redirect(url_for('indexPage'))
     else:
-         return render_template('edit_day.html', day_to_edit = day_to_edit)
+         return render_template(
+            'edit_day.html',
+            day_to_edit = day_to_edit,
+            year = month_values[0],
+            month_name = month_values[1],
+            days_worked_month = month_values[2],
+            hours_worked_month = month_values[3],
+            avg_hrs_day = month_values[4],
+            total_hours = month_values[5],
+            h4 = h4,
+            )
 
 
 if __name__ == '__main__':
