@@ -187,7 +187,7 @@ def deleteDay(work_date):
     year = datetime.today().year
     month_values = getMonthValues(month, year)
 
-    h4 = "Are you sure you want to delete?"
+    h4 = "Delete Day"
 
     if request.method == 'POST':
         session.delete(day_to_delete)
