@@ -12,11 +12,12 @@ from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
 
-engine = create_engine('sqlite:///deepwork.db')
+engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
 Base.metadata.bind = engine
 # binds the engine to the Base class
 # makes the connections between class definitions & corresponding tables in db
 DBSession = sessionmaker(bind = engine)
+
 # creates sessionmaker object, which establishes link of
 # communication between our code executions and the engine we created
 session = DBSession()
@@ -68,6 +69,7 @@ def getMonthValues(month, year):
             avg_hrs_day,
             total_hours
         ])
+        # session.close() # 11/22
         return month_values
 
 
