@@ -1,0 +1,24 @@
+
+<nav class="navbar navbar-inverse">
+    <h2 class="text-center"><a href={{url_for('indexPage')}}>Deep Work:</a><small> "The ability to focus without distraction on a cognitively demanding task."</small></h2>
+</nav>
+
+<h3 class="text-center">{{ h4 }}</h3>
+
+<div class="panel panel-default row">
+
+    <div class="col-sm-7 col-md-8 col-lg-9">
+        Total days worked for {{ month_name }} {{ year }}: {{ days_worked_month }} </br>
+        Total hours worked for {{ month_name }} {{ year }}: {{ hours_worked_month }} </br>
+        Average hours per day worked for {{ month_name }} {{ year }}: {{ avg_hrs_day }} </br>
+    </div>
+
+    <div class="col-sm-5 col-md-4 col-lg-3">
+        Running total hours of Deep Work: {{total_hours[0]}} </br>
+        <a href={{url_for('monthly_totals')}}>Monthly Totals</a></br>
+        <a href={{url_for('addDay')}} type="button" class="btn btn-primary btn-xs">Add A Day</a>
+    </div>
+
+</div>
+
+{% include '_month_links.html' %}
