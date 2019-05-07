@@ -1,5 +1,6 @@
 from app import app
 from flask import request, render_template, redirect, url_for, flash
+from app.forms import AddDayForm, EditDayForm, DeleteDayForm
 
 from sqlalchemy import create_engine, func, update, extract
 from sqlalchemy.orm import sessionmaker
@@ -150,15 +151,20 @@ def addDay():
     month = datetime.today().month
     year = datetime.today().year
     month_values = getMonthValues(month, year)
-
     h4 = ("Add Day")
 
-    if request.method == 'POST':
+    form = AddDayForm()     # use the class from forms.py
+
+    if form.validate_on_submit():
+    # if request.method == 'POST':
         new_date = Dailyhours(
-            work_date = datetime.strptime(
-                request.form['work_date'], "%Y-%m-%d"),
-            hours_worked = (request.form['hours_worked']),
-            remarks = (request.form['remarks'])
+            # work_date = datetime.strptime(
+            #     request.form['work_date'], "%Y-%m-%d"),
+            # hours_worked = (request.form['hours_worked']),
+            # remarks = (request.form['remarks'])
+            work_date = form.new_date.data,
+            hours_worked = form.hours_worked.data,
+            remarks = form.remarks.data
             )
         session.add(new_date)
         session.commit()
@@ -173,6 +179,7 @@ def addDay():
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
+            form = form
             )
 
 
@@ -212,14 +219,16 @@ def editDay(work_date):
     month = datetime.today().month
     year = datetime.today().year
     month_values = getMonthValues(month, year)
-
     h4 = ("Edit Day")
+
+    form = EditDayForm()     # use the class from forms.py
 
     day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
 
-    if request.method == 'POST':
-        data = ({'hours_worked': request.form['hours_worked'],
-                'remarks': request.form['remarks']}
+    if form.validate_on_submit():
+    # if request.method == 'POST':
+        data = ({'hours_worked': form.hours_worked.data,
+                'remarks': form.remarks.data}
                 )
         session.query(Dailyhours).filter_by(work_date = work_date).update(data)
         session.commit()
@@ -235,6 +244,7 @@ def editDay(work_date):
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
+            form = form
             )
 
 

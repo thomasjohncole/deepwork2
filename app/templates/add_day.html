@@ -6,37 +6,37 @@
 
     {% include '_nav_header.html' %}
 
-    <form class="form-horizontal bg-info" method='POST' action="{{ url_for('addDay') }}">
-
+    <form class="form-horizontal bg-info" method='POST' novalidate action="{{ url_for('addDay') }}">
+        {{ form.hidden_tag() }}
         <div class="row">
 
-            <label for="inputDate" class="col-sm-2 control-label">New Date:</label>
+            {{ form.new_date.label(class="col-sm-2 control-label") }}
 
             <div class="col-sm-4">
-                <input type="text" name="work_date" class="form-control" id="inputDate" placeholder="Date">
+                {{ form.new_date(class="form-control") }}
             </div>
 
         </div>
         <div class="row">
 
-            <label for="inputHours" class="col-sm-2 control-label">Hours Worked:</label>
+            {{ form.hours_worked.label(class="col-sm-2 control-label") }}
 
             <div class="col-sm-2">
-                <input type="text" name="hours_worked" size="35" class="form-control" id="inputHours" placeholder="Hours Worked">
+
+                {{ form.hours_worked(class="form-control", size=35, id="inputHours") }}
             </div>
 
         </div>
         <div class="row">
 
-            <label for="inputRemarks" class="col-sm-2 control-label">Remarks:</label>
-
+            {{ form.remarks.label(class="col-sm-2 control-label") }}
             <div class="col-sm-9">
-                <input type="text" name="remarks" size="75" class="form-control" id="inputRemarks" placeholder="Remarks">
+                {{ form.remarks(class="form control", size=75, id="inputRemarks") }}
             </div>
 
         </div>
 
-        <button type ='submit'>Submit</button>
+        <button type ='submit'>{{ form.submit() }}</button>
 
     </form>
 

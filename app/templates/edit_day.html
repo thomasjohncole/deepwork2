@@ -8,25 +8,23 @@
 
     <h3>Edit the Entry for "{{ day_to_edit.work_date }}"</h2>
 
-    <form class="form-horizontal bg-info" method='POST' action="{{url_for('editDay', work_date = day_to_edit.work_date)}}">
-
+    <form class="form-horizontal bg-info" method='POST' novalidate action="{{ url_for('editDay', work_date = day_to_edit.work_date) }}">
+        {{ form.hidden_tag() }}
         <div class="row">
 
-            <label for="inputHours" class="col-sm-2 control-label">Hours Worked:</label>
+            {{ form.hours_worked.label(class="col-sm-2 control-label") }}
 
             <div class="col-sm-2">
-                <input type="text" name="hours_worked" class="form-control" id="inputHours" value="{{day_to_edit.hours_worked }}">
+                {{ form.hours_worked(class="form-control", size=35, id="inputHours", value=day_to_edit.hours_worked) }}
             </div>
 
         </div>
         <div class="row">
 
-            <label for="inputRemarks" class="col-sm-2 control-label">Remarks:</label>
-
+            {{ form.remarks.label(class="col-sm-2 control-label") }}
             <div class="col-sm-9">
-                <input type="text" name="remarks" size="75" class="form-control" id="inputRemarks" value="{{day_to_edit.remarks }}">
+                {{ form.remarks(class="form control", size=75, value=day_to_edit.remarks) }}
             </div>
-
         </div>
 
         <button type ='submit'>Submit</button>
