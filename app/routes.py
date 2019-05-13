@@ -152,7 +152,6 @@ def addDay():
     year = datetime.today().year
     month_values = getMonthValues(month, year)
     h4 = ("Add Day")
-
     form = AddDayForm()     # use the class from forms.py
 
     if form.validate_on_submit():
