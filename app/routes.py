@@ -3,18 +3,18 @@ from flask import request, render_template, redirect, url_for, flash
 from app.forms import AddDayForm, EditDayForm, DeleteDayForm
 
 from sqlalchemy import create_engine, func, update, extract
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from database_setup import Base, Dailyhours
 from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
 
-engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
+# engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
+engine = create_engine('sqlite:///deepwork.db')
 Base.metadata.bind = engine
-# binds the engine to the Base class
+# binds the engine to the Base class (declarative_base)
 # makes the connections between class definitions & corresponding tables in db
-DBSession = sessionmaker(bind = engine)
-
+DBSession = scoped_session(sessionmaker(bind=engine))
 # creates sessionmaker object, which establishes link of
 # communication between our code executions and the engine we created
 session = DBSession()
@@ -104,7 +104,6 @@ def monthly_totals():
     ''' generate totals for each month of work '''
     current_month = datetime.today().month
     current_year = datetime.today().year
-
     # define empty list to be used in while loop
     monthly_totals = []
     # find the earliest date in the database
@@ -154,8 +153,19 @@ def addDay():
     h4 = ("Add Day")
     form = AddDayForm()     # use the class from forms.py
 
-    if form.validate_on_submit():
+    # if form.validate_on_submit():
     # if request.method == 'POST':
+    #     # testing date query for unique validation check
+    #     try:
+    #         date_check = (session.query(Dailyhours)
+    #                         .filter_by(work_date = form.new_date.data).one())
+    #         print(date_check.work_date)
+    #     except:
+    #         print("Error, date already exists")
+    #         flash('Date {} already exists in db!'.format(date_check))
+    #         return redirect(url_for('addDay'))
+
+    if form.validate_on_submit():
         new_date = Dailyhours(
             # work_date = datetime.strptime(
             #     request.form['work_date'], "%Y-%m-%d"),
@@ -165,6 +175,8 @@ def addDay():
             hours_worked = form.hours_worked.data,
             remarks = form.remarks.data
             )
+
+
         session.add(new_date)
         session.commit()
         return redirect(url_for('indexPage'))
@@ -186,17 +198,17 @@ def addDay():
 def deleteDay(work_date):
     """ Page to delete a day row entry from the database """
     day_to_delete = session.query(Dailyhours).filter_by(work_date = work_date).one()
-
+    print(day_to_delete.work_date)
     month = datetime.today().month
     year = datetime.today().year
     month_values = getMonthValues(month, year)
-
     h4 = "Delete Day"
+    form = DeleteDayForm()
 
     if request.method == 'POST':
         session.delete(day_to_delete)
         session.commit()
-        # flash message here
+        flash('Entry for {} has been deleted!'.format(day_to_delete.work_date))
         return redirect(url_for('indexPage'))
     else:
          return render_template(
@@ -209,6 +221,7 @@ def deleteDay(work_date):
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
+            form = form
             )
 
 
@@ -219,9 +232,7 @@ def editDay(work_date):
     year = datetime.today().year
     month_values = getMonthValues(month, year)
     h4 = ("Edit Day")
-
     form = EditDayForm()     # use the class from forms.py
-
     day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
 
     if form.validate_on_submit():

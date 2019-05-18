@@ -6,12 +6,12 @@
 
      {% include '_nav_header.html' %}
 
-    <div class="header">
-        <h3 class="bg-warning">Are you sure you want to delete "{{ day_to_delete.work_date }}" from the list?</h1>
+    <div class="header alert alert-warning">
+        <strong>Are you sure you want to delete "{{ day_to_delete.work_date }}" from the list?</strong>
     </div>
 
     <div class="content bg-info">
-        <form method='POST' action="{{url_for('deleteDay', work_date = day_to_delete.work_date)}}">
+        <form method='POST' novalidate action="{{url_for('deleteDay', work_date = day_to_delete.work_date)}}">
 
             <button type='submit'>{{ form.submit() }}</button>
 

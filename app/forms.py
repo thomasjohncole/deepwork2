@@ -2,9 +2,16 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, FloatField, SubmitField
 from wtforms.validators import DataRequired
 
+from .util.validators import Unique
+from database_setup import Dailyhours
+
 class AddDayForm(FlaskForm):
     new_date = DateField('New Date', format='%Y-%m-%d', \
-        validators=[DataRequired()])
+        validators=[DataRequired(),
+        Unique(
+            Dailyhours,
+            Dailyhours.work_date,
+            message='This date already has an entry')])
     hours_worked = FloatField('Hours Worked', validators=[DataRequired()])
     remarks = StringField('Remarks')
     submit = SubmitField('Submit')
@@ -15,5 +22,5 @@ class EditDayForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class DeleteDayForm(FlaskForm):
-    submit = SubmitField('YES!')
+    submit = SubmitField('DELETE')
 

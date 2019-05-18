@@ -11,6 +11,14 @@
     <tr><th>Date</th><th>Day</th><th>Hours</th><th>Remarks</th></tr>
     <tr></tr>
 
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success"><strong>{{ message }}</strong></div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     {% for item in list %}
 
         <tr><td>{{ item.work_date }}</td><td>{{ item.work_date.strftime('%A') }}<td>{{ item.hours_worked }} hours</td><td>{{ item.remarks }}</td>
