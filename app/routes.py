@@ -175,8 +175,6 @@ def addDay():
             hours_worked = form.hours_worked.data,
             remarks = form.remarks.data
             )
-
-
         session.add(new_date)
         session.commit()
         return redirect(url_for('indexPage'))

@@ -12,7 +12,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session # new and below
 engine = create_engine( 'sqlite:///deepwork.db') # moved this up from the bottom
 DBSession = scoped_session(sessionmaker(bind=engine)) # new 05/2019
 Base = declarative_base()
-Base.query = DBSession.query_property() # new 05/2019
+Base.query = DBSession.query_property()
+# new 05/2019 this allows Unique class code to function properly
 
 # creates a table with the specified columns #
 class Dailyhours(Base):
