@@ -1,25 +1,28 @@
+# routes.py file
 from app import app
 from flask import request, render_template, redirect, url_for, flash
 from app.forms import AddDayForm, EditDayForm, DeleteDayForm
+from app.models import Dailyhours
+from app import db
 
-from sqlalchemy import create_engine, func, update, extract
-from sqlalchemy.orm import sessionmaker, scoped_session
-from database_setup import Base, Dailyhours
+# from sqlalchemy import create_engine, func, update, extract
+# from sqlalchemy.orm import sessionmaker, scoped_session
+# from database_setup import Base, Dailyhours
 from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
 
-# engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
-engine = create_engine('sqlite:///deepwork.db')
-Base.metadata.bind = engine
-# binds the engine to the Base class (declarative_base)
-# makes the connections between class definitions & corresponding tables in db
-DBSession = scoped_session(sessionmaker(bind=engine))
-# creates sessionmaker object, which establishes link of
-# communication between our code executions and the engine we created
-session = DBSession()
-# create an instance of the DBSession  object - to make a changes
-# to the database, we can call a method within the session
+# # engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
+# engine = create_engine('sqlite:///deepwork.db')
+# Base.metadata.bind = engine
+# # binds the engine to the Base class (declarative_base)
+# # makes the connections between class definitions & corresponding tables in db
+# DBSession = scoped_session(sessionmaker(bind=engine))
+# # creates sessionmaker object, which establishes link of
+# # communication between our code executions and the engine we created
+# session = DBSession()
+# # create an instance of the DBSession  object - to make a changes
+# # to the database, we can call a method within the session
 
 # Add converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
 class DateConverter(BaseConverter):
@@ -43,12 +46,12 @@ def getMonthValues(month, year):
         """ calculate values based on integer month and year parameters """
         month_name = date(1900, month, 1).strftime('%B')
         total_month_days = (
-                session.query(func.count(Dailyhours.hours_worked))
+                Dailyhours.query(func.count(Dailyhours.hours_worked))
                 .filter(extract('month', Dailyhours.work_date)==month)
                 .filter(extract('year', Dailyhours.work_date)==year).one()
                 )
         total_month_hours = (
-                session.query(func.sum(Dailyhours.hours_worked))
+                Dailyhours.query(func.sum(Dailyhours.hours_worked))
                 .filter(extract('month', Dailyhours.work_date)==month)
                 .filter(extract('year', Dailyhours.work_date)==year).one()
                 )
@@ -57,7 +60,7 @@ def getMonthValues(month, year):
         else:
             a = total_month_hours[0] / total_month_days[0]
             avg_hrs_day = format(a, '.2f')
-        total_hours = session.query(func.sum(Dailyhours.hours_worked)).one()
+        total_hours = Dailyhours.query(func.sum(Dailyhours.hours_worked)).one()
         month_values = ([
             year,
             month_name,
@@ -82,7 +85,7 @@ def indexPage():
 def displayMonth(month, year):
     month_values = getMonthValues(month, year)
     list = (
-        session.query(Dailyhours).order_by(Dailyhours.work_date)
+        Dailyhours.query.order_by(Dailyhours.work_date)
         .filter(extract('month', Dailyhours.work_date)==month)
         .filter(extract('year', Dailyhours.work_date)==year)
         )
@@ -107,7 +110,7 @@ def monthly_totals():
     # define empty list to be used in while loop
     monthly_totals = []
     # find the earliest date in the database
-    earliest_date = session.query(func.min(Dailyhours.work_date)).one()
+    earliest_date = DailyHours.query(func.min(Dailyhours.work_date)).one()
     # get the year value out of that
     earliest_year = earliest_date[0].year
     month = current_month
@@ -157,7 +160,7 @@ def addDay():
     # if request.method == 'POST':
     #     # testing date query for unique validation check
     #     try:
-    #         date_check = (session.query(Dailyhours)
+    #         date_check = (DailyHours.query(Dailyhours)
     #                         .filter_by(work_date = form.new_date.data).one())
     #         print(date_check.work_date)
     #     except:
@@ -175,8 +178,8 @@ def addDay():
             hours_worked = form.hours_worked.data,
             remarks = form.remarks.data
             )
-        session.add(new_date)
-        session.commit()
+        db.session.add(new_date)
+        db.session.commit()
         return redirect(url_for('indexPage'))
     else:
         return render_template(
@@ -195,7 +198,7 @@ def addDay():
 @app.route('/delete/<date:work_date>/', methods=['GET', 'POST'])
 def deleteDay(work_date):
     """ Page to delete a day row entry from the database """
-    day_to_delete = session.query(Dailyhours).filter_by(work_date = work_date).one()
+    day_to_delete = Dailyhours.query.filter_by(work_date = work_date).one()
     print(day_to_delete.work_date)
     month = datetime.today().month
     year = datetime.today().year
@@ -204,8 +207,8 @@ def deleteDay(work_date):
     form = DeleteDayForm()
 
     if request.method == 'POST':
-        session.delete(day_to_delete)
-        session.commit()
+        db.session.delete(day_to_delete)
+        db.session.commit()
         flash('Entry for {} has been deleted!'.format(day_to_delete.work_date))
         return redirect(url_for('indexPage'))
     else:
@@ -231,15 +234,15 @@ def editDay(work_date):
     month_values = getMonthValues(month, year)
     h4 = ("Edit Day")
     form = EditDayForm()     # use the class from forms.py
-    day_to_edit = session.query(Dailyhours).filter_by(work_date = work_date).one()
+    day_to_edit = DailyHours.query(Dailyhours).filter_by(work_date = work_date).one()
 
     if form.validate_on_submit():
     # if request.method == 'POST':
         data = ({'hours_worked': form.hours_worked.data,
                 'remarks': form.remarks.data}
                 )
-        session.query(Dailyhours).filter_by(work_date = work_date).update(data)
-        session.commit()
+        DailyHours.query.filter_by(work_date = work_date).update(data)
+        db.session.commit()
         return redirect(url_for('indexPage'))
     else:
          return render_template(
