@@ -1,3 +1,4 @@
+# this file is no longer needed
 import sys
 
 from sqlalchemy import Column, String, Date, Float

@@ -5,24 +5,10 @@ from app.forms import AddDayForm, EditDayForm, DeleteDayForm
 from app.models import Dailyhours
 from app import db
 
-# from sqlalchemy import create_engine, func, update, extract
-# from sqlalchemy.orm import sessionmaker, scoped_session
-# from database_setup import Base, Dailyhours
+from sqlalchemy import func, update, extract
 from datetime import date, datetime
 # add import for making custom converter class
 from werkzeug.routing import BaseConverter, ValidationError
-
-# # engine = create_engine('sqlite:///deepwork.db?check_same_thread=False') # fixed error 11/22/2018
-# engine = create_engine('sqlite:///deepwork.db')
-# Base.metadata.bind = engine
-# # binds the engine to the Base class (declarative_base)
-# # makes the connections between class definitions & corresponding tables in db
-# DBSession = scoped_session(sessionmaker(bind=engine))
-# # creates sessionmaker object, which establishes link of
-# # communication between our code executions and the engine we created
-# session = DBSession()
-# # create an instance of the DBSession  object - to make a changes
-# # to the database, we can call a method within the session
 
 # Add converter - https://stackoverflow.com/questions/31669864/date-in-flask-url
 class DateConverter(BaseConverter):
@@ -46,12 +32,12 @@ def getMonthValues(month, year):
         """ calculate values based on integer month and year parameters """
         month_name = date(1900, month, 1).strftime('%B')
         total_month_days = (
-                Dailyhours.query(func.count(Dailyhours.hours_worked))
+                db.session.query(func.count(Dailyhours.hours_worked))
                 .filter(extract('month', Dailyhours.work_date)==month)
                 .filter(extract('year', Dailyhours.work_date)==year).one()
                 )
         total_month_hours = (
-                Dailyhours.query(func.sum(Dailyhours.hours_worked))
+                db.session.query(func.sum(Dailyhours.hours_worked))
                 .filter(extract('month', Dailyhours.work_date)==month)
                 .filter(extract('year', Dailyhours.work_date)==year).one()
                 )
@@ -60,7 +46,7 @@ def getMonthValues(month, year):
         else:
             a = total_month_hours[0] / total_month_days[0]
             avg_hrs_day = format(a, '.2f')
-        total_hours = Dailyhours.query(func.sum(Dailyhours.hours_worked)).one()
+        total_hours = db.session.query(func.sum(Dailyhours.hours_worked)).one()
         month_values = ([
             year,
             month_name,
@@ -69,7 +55,6 @@ def getMonthValues(month, year):
             avg_hrs_day,
             total_hours
         ])
-        # session.close() # 11/22
         return month_values
 
 
@@ -110,7 +95,7 @@ def monthly_totals():
     # define empty list to be used in while loop
     monthly_totals = []
     # find the earliest date in the database
-    earliest_date = DailyHours.query(func.min(Dailyhours.work_date)).one()
+    earliest_date = db.session.query(func.min(Dailyhours.work_date)).one()
     # get the year value out of that
     earliest_year = earliest_date[0].year
     month = current_month
@@ -156,24 +141,8 @@ def addDay():
     h4 = ("Add Day")
     form = AddDayForm()     # use the class from forms.py
 
-    # if form.validate_on_submit():
-    # if request.method == 'POST':
-    #     # testing date query for unique validation check
-    #     try:
-    #         date_check = (DailyHours.query(Dailyhours)
-    #                         .filter_by(work_date = form.new_date.data).one())
-    #         print(date_check.work_date)
-    #     except:
-    #         print("Error, date already exists")
-    #         flash('Date {} already exists in db!'.format(date_check))
-    #         return redirect(url_for('addDay'))
-
     if form.validate_on_submit():
         new_date = Dailyhours(
-            # work_date = datetime.strptime(
-            #     request.form['work_date'], "%Y-%m-%d"),
-            # hours_worked = (request.form['hours_worked']),
-            # remarks = (request.form['remarks'])
             work_date = form.new_date.data,
             hours_worked = form.hours_worked.data,
             remarks = form.remarks.data
@@ -234,14 +203,13 @@ def editDay(work_date):
     month_values = getMonthValues(month, year)
     h4 = ("Edit Day")
     form = EditDayForm()     # use the class from forms.py
-    day_to_edit = DailyHours.query(Dailyhours).filter_by(work_date = work_date).one()
+    day_to_edit = db.session.query(Dailyhours).filter_by(work_date = work_date).one()
 
     if form.validate_on_submit():
-    # if request.method == 'POST':
         data = ({'hours_worked': form.hours_worked.data,
                 'remarks': form.remarks.data}
                 )
-        DailyHours.query.filter_by(work_date = work_date).update(data)
+        Dailyhours.query.filter_by(work_date = work_date).update(data)
         db.session.commit()
         return redirect(url_for('indexPage'))
     else:
@@ -257,8 +225,3 @@ def editDay(work_date):
             h4 = h4,
             form = form
             )
-
-
-# if __name__ == '__main__':
-#     app.debug = True
-#     app.run(host = '0.0.0.0', port = 5001)
