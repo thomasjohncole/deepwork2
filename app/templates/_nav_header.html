@@ -14,11 +14,16 @@
     </div>
 
     <div class="col-sm-5 col-md-4 col-lg-3">
-        Running total hours of Deep Work: {{total_hours[0]}} </br>
+        Running total hours of Deep Work: {{total_hours}} </br>
         <a href={{url_for('monthly_totals')}}>Monthly Totals</a></br>
         <a href={{url_for('addDay')}} type="button" class="btn btn-primary btn-xs">Add A Day</a>
     </div>
 
 </div>
 
-{% include '_month_links.html' %}
+{% for year in year_list %}
+    {{ year }} by Month:
+        {% for month in month_list %}
+            <a href={{url_for('displayMonth', month=month[0], year=year)}}>{{ month[1] }}</a>
+        {% endfor %}</br>
+{% endfor %}

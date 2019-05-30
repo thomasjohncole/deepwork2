@@ -3,7 +3,8 @@ from wtforms import StringField, DateField, FloatField, SubmitField
 from wtforms.validators import DataRequired
 
 from .util.validators import Unique
-from database_setup import Dailyhours
+from app.models import Dailyhours
+from app import db
 
 class AddDayForm(FlaskForm):
     new_date = DateField('New Date', format='%Y-%m-%d', \

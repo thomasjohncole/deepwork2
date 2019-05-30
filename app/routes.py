@@ -53,9 +53,35 @@ def getMonthValues(month, year):
             total_month_days[0],
             total_month_hours[0],
             avg_hrs_day,
-            total_hours
+            total_hours[0]
         ])
         return month_values
+
+def get_month_links():
+    """
+    returns two lists: month_links contains tuples of month numbers and names,
+    year_values contains descending years from current for which we have data
+    """
+    current_month = datetime.today().month
+    current_year = datetime.today().year
+    # find the earliest date in the database
+    earliest_date = db.session.query(func.min(Dailyhours.work_date)).one()
+    # get the year value out of that
+    earliest_year = earliest_date[0].year
+    month = current_month
+    year = current_year
+    month_links = (
+        [(1,'January'),(2,'February'),(3,'March'),(4,'April'),(5,'May'),
+        (6,'June'),(7,'July'),(8,'August'),(9,'September'),(10,'October'),
+        (11,'November'),(12,'December')]
+    )
+    year_values = []
+    while year >= earliest_year:
+        year_values.append(year)
+        # decrement the year until we run out
+        year = year -1
+    return (month_links, year_values)
+
 
 
 @app.route('/')
@@ -75,6 +101,9 @@ def displayMonth(month, year):
         .filter(extract('year', Dailyhours.work_date)==year)
         )
     h4 = ("Month View for {} {}").format(month_values[1], year)
+    # get month links for header
+    month_links = get_month_links()
+
     return render_template(
         'display_month.html',
         list = list,
@@ -85,6 +114,8 @@ def displayMonth(month, year):
         avg_hrs_day = month_values[4],
         total_hours = month_values[5],
         h4 = h4,
+        year_list = month_links[1],
+        month_list = month_links[0]
         )
 
 @app.route('/totals')
@@ -92,21 +123,21 @@ def monthly_totals():
     ''' generate totals for each month of work '''
     current_month = datetime.today().month
     current_year = datetime.today().year
-    # define empty list to be used in while loop
-    monthly_totals = []
     # find the earliest date in the database
     earliest_date = db.session.query(func.min(Dailyhours.work_date)).one()
     # get the year value out of that
     earliest_year = earliest_date[0].year
     month = current_month
     year = current_year
+     # define empty list to be used in while loop
+    monthly_totals = []
     # this nested loop produces an array of values for each month worked
-    # starting with the current  month and year and decrementing
+    # starting with the current month and year and decrementing
     while year >= earliest_year:
         while month > 0:
             # get the current month values
             month_values = getMonthValues(month, year)
-            # add them to the monthly_totals array
+            # add them to the monthly_totals nested list
             monthly_totals.append(month_values)
             # then decrement until we run out
             month = month - 1
@@ -114,10 +145,12 @@ def monthly_totals():
         year = year -1
         # set the month back to 12 once the year is decremented
         month = 12
-
-    # reset month values to current for header_nav template
+    # print(monthly_totals)
+    # reset month values to current for header_nav template ?
     month_values = getMonthValues(current_month, current_year)
     h4 = "Monthly Totals"
+    # get month links for header
+    month_links = get_month_links()
 
     return render_template(
         'monthly_totals.html',
@@ -129,6 +162,8 @@ def monthly_totals():
         hours_worked_month = month_values[3],
         avg_hrs_day = month_values[4],
         total_hours = month_values[5],
+        year_list = month_links[1],
+        month_list = month_links[0]
         )
 
 
@@ -140,6 +175,8 @@ def addDay():
     month_values = getMonthValues(month, year)
     h4 = ("Add Day")
     form = AddDayForm()     # use the class from forms.py
+    # get month links for header
+    month_links = get_month_links()
 
     if form.validate_on_submit():
         new_date = Dailyhours(
@@ -160,7 +197,9 @@ def addDay():
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
-            form = form
+            form = form,
+            year_list = month_links[1],
+            month_list = month_links[0]
             )
 
 
@@ -174,6 +213,8 @@ def deleteDay(work_date):
     month_values = getMonthValues(month, year)
     h4 = "Delete Day"
     form = DeleteDayForm()
+    # get month links for header
+    month_links = get_month_links()
 
     if request.method == 'POST':
         db.session.delete(day_to_delete)
@@ -191,7 +232,9 @@ def deleteDay(work_date):
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
-            form = form
+            form = form,
+            year_list = month_links[1],
+            month_list = month_links[0]
             )
 
 
@@ -204,6 +247,8 @@ def editDay(work_date):
     h4 = ("Edit Day")
     form = EditDayForm()     # use the class from forms.py
     day_to_edit = db.session.query(Dailyhours).filter_by(work_date = work_date).one()
+    # get month links for header
+    month_links = get_month_links()
 
     if form.validate_on_submit():
         data = ({'hours_worked': form.hours_worked.data,
@@ -223,5 +268,7 @@ def editDay(work_date):
             avg_hrs_day = month_values[4],
             total_hours = month_values[5],
             h4 = h4,
-            form = form
+            form = form,
+            year_list = month_links[1],
+            month_list = month_links[0]
             )
