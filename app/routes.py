@@ -57,6 +57,7 @@ def getMonthValues(month, year):
         ])
         return month_values
 
+
 def get_month_links():
     """
     returns two lists: month_links contains tuples of month numbers and names,
@@ -81,7 +82,6 @@ def get_month_links():
         # decrement the year until we run out
         year = year -1
     return (month_links, year_values)
-
 
 
 @app.route('/')
@@ -117,6 +117,7 @@ def displayMonth(month, year):
         year_list = month_links[1],
         month_list = month_links[0]
         )
+
 
 @app.route('/totals')
 def monthly_totals():
