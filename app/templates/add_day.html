@@ -1,19 +1,29 @@
 {% extends "bootstrap/base.html" %}
 
+{% block scripts %}
+  {{ super() }}
+  {{ datepicker.loader(theme="redmond") }} {# to load jQuery-ui #}
+  {{ datepicker.picker(id=".dp") }}
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
 
     {% include '_nav_header.html' %}
 
-    <form class="form-horizontal bg-info" method='POST' novalidate action="{{ url_for('addDay') }}">
+    <form class="form-horizontal bg-info" autocomplete="off" method='POST' novalidate action="{{ url_for('addDay') }}">
         {{ form.hidden_tag() }}
         <div class="row">
+
+            <!-- <form class="verticalform">
+                <input type="text" class="form-control dp" />
+              </form> -->
 
             {{ form.new_date.label(class="col-sm-2 control-label") }}
 
             <div class="col-sm-4">
-                {{ form.new_date(class="form-control") }}
+                {{ form.new_date(class="form-control dp") }}
                 {% for error in form.new_date.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
