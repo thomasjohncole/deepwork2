@@ -23,12 +23,11 @@
 
             {{ form.remarks.label(class="col-sm-2 control-label") }}
             <div class="col-sm-9">
-                {{ form.remarks(class="form control", size=75, value=day_to_edit.remarks) }}
+                {{ form.remarks(class="form-control", size=75, value=day_to_edit.remarks) }}
             </div>
         </div>
 
-        <button type ='submit'>Submit</button>
-
+        <button type ='submit'>{{ form.submit(style="border:none") }}</button>
     </form>
 
 </div>

@@ -11,11 +11,13 @@ https://pypi.org/project/Flask-Datepicker/ -->
 
 {% block content %}
 
+
 <div class="container">
 
     {% include '_nav_header.html' %}
 
-    <form class="form-horizontal bg-info" autocomplete="off" method='POST' novalidate action="{{ url_for('addDay') }}">
+    <form class="form-horizontal bg-info" autocomplete="off" method='POST' 
+        novalidate action="{{ url_for('addDay') }}">
         {{ form.hidden_tag() }}
         <div class="row">
 
@@ -50,12 +52,12 @@ https://pypi.org/project/Flask-Datepicker/ -->
 
             {{ form.remarks.label(class="col-sm-2 control-label") }}
             <div class="col-sm-9">
-                {{ form.remarks(class="form control", size=75, id="inputRemarks") }}
+                {{ form.remarks(class="form-control", size=75, id="inputRemarks") }}
             </div>
 
         </div>
 
-        <button type ='submit'>{{ form.submit() }}</button>
+        <button type ='submit'>{{ form.submit(style="border:none") }}</button>
 
     </form>
 

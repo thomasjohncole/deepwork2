@@ -13,12 +13,12 @@ class AddDayForm(FlaskForm):
             Dailyhours,
             Dailyhours.work_date,
             message='This date already has an entry')])
-    hours_worked = FloatField('Hours Worked', validators=[DataRequired()])
+    hours_worked = FloatField('Total Hours', validators=[DataRequired()])
     remarks = StringField('Remarks')
     submit = SubmitField('Submit')
 
 class EditDayForm(FlaskForm):
-    hours_worked = FloatField('Hours Worked', validators=[DataRequired()])
+    hours_worked = FloatField('Total Hours', validators=[DataRequired()])
     remarks = StringField('Remarks')
     submit = SubmitField('Submit')
 
