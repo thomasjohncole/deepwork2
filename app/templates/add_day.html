@@ -1,5 +1,8 @@
 {% extends "bootstrap/base.html" %}
 
+<!-- adding below for date picker:
+https://pypi.org/project/Flask-Datepicker/ -->
+
 {% block scripts %}
   {{ super() }}
   {{ datepicker.loader(theme="redmond") }} {# to load jQuery-ui #}

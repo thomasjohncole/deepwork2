@@ -27,6 +27,36 @@ class DateConverter(BaseConverter):
 
 app.url_map.converters['date'] = DateConverter
 
+def getYearValues(year):
+        """ calculate values based on year parameters """
+        # month_name = date(1900, month, 1).strftime('%B')
+        total_year_days = (
+                db.session.query(func.count(Dailyhours.hours_worked))
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+        total_year_hours = (
+                db.session.query(func.sum(Dailyhours.hours_worked))
+                .filter(extract('year', Dailyhours.work_date)==year).one()
+                )
+        if total_year_days[0] == 0:
+            avg_hrs_day = 0 # conditional for divide by zero
+        else:
+            a = total_year_hours[0] / total_year_days[0]
+            avg_hrs_day = format(a, '.2f')
+        # need month_name and total_hours for _nav_header.html
+        current_month = datetime.today().month  # this is an integer 1-12   
+        month_name = date(1900, current_month, 1).strftime('%B')    
+        total_hours = db.session.query(func.sum(Dailyhours.hours_worked)).one()
+
+        year_values = ([
+            year,
+            total_year_days[0],
+            total_year_hours[0],
+            avg_hrs_day,
+            total_hours[0]
+        ])
+        return year_values
+
 
 def getMonthValues(month, year):
         """ calculate values based on integer month and year parameters """
@@ -156,6 +186,48 @@ def monthly_totals():
     return render_template(
         'monthly_totals.html',
         totals = monthly_totals,
+        h4 = h4,
+        year = month_values[0],
+        month_name = month_values[1],
+        days_worked_month = month_values[2],
+        hours_worked_month = month_values[3],
+        avg_hrs_day = month_values[4],
+        total_hours = month_values[5],
+        year_list = month_links[1],
+        month_list = month_links[0]
+        )
+
+@app.route('/yearly_totals')
+def yearly_totals():
+    ''' generate total hours for each year of work '''
+    current_year = datetime.today().year
+    # find the earliest date in the database
+    earliest_date = db.session.query(func.min(Dailyhours.work_date)).one()
+    # get the year value out of that
+    earliest_year = earliest_date[0].year
+    year = current_year
+     # define empty list to be used in while loop
+    yearly_totals = []
+    # this loop produces an array of values for each year worked
+    # starting with the current year and decrementing
+    while year >= earliest_year:
+        # get the current year values
+        year_values = getYearValues(year)
+        # decrement the year until we run out
+        yearly_totals.append(year_values)
+        print(yearly_totals)
+        year = year -1
+        
+    # reset month values to current for header_nav template ?
+    current_month = datetime.today().month
+    month_values = getMonthValues(current_month, current_year)
+    h4 = "Yearly Totals"
+    # get month links for header
+    month_links = get_month_links()
+
+    return render_template(
+        'yearly_totals.html',
+        totals = yearly_totals,
         h4 = h4,
         year = month_values[0],
         month_name = month_values[1],
