@@ -2,7 +2,7 @@
 
 After I read the book Deep Work, by Cal Newport, I started tracking my coding study/work hours in a simple text file. As the file got bigger, I wanted to see things like total hours for a month, or cumulative totals, without having to to the math every time, so I created a Flask app to track and view my deep work time.
 
-(put a screenshot here)
+![deepwork2 screenshot](deepwork2-screenshot.png?raw=true)
 
 ### Technologies used
 
